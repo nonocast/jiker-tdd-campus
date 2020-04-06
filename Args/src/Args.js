@@ -11,6 +11,14 @@ class Args {
   }
 
   /**
+   * return shcema size
+   * @api @public
+   */
+  get schemaSize() {
+    return _.keys(this._schema).length;
+  }
+
+  /**
    * Define schema pattern
    * 
    * schema format:
@@ -106,25 +114,25 @@ class Args {
    * @api @public
    */
   parse(command) {
-    this._flags = _
-      .chain(command)
-      .split(/-/)
-      .map(_.trim)
-      .compact()
-      .reduce((result, element) => {
-        let [flag] = element.split(/\s/);
-        let rule = this._schema[flag];
-        if (!rule) throw new Error(`command not match schema`);
-        let value = null;
-        try {
-          value = rule.takeValue(element);
-        } catch (error) {
-          value = rule.defaultValue;
-        }
-        result[flag] = value;
-        return result;
-      }, {})
-      .value();
+    let flags = {};
+
+    // initial default values
+    _.each(_.keys(this._schema), flag => { flags[flag] = this._schema[flag].defaultValue; });
+
+    let it = this._slices(command)[Symbol.iterator]();
+    let slice = null;
+    while (!(slice = it.next()).done) {
+      if (!(slice.value.length > 1 && slice.value.startsWith('-'))) {
+        throw new Error('invalid command, flag should start with \'-\'');
+      }
+
+      let flag = slice.value.slice(1);
+      let rule = this._schema[flag];
+      if (!rule) throw new Error('invalid command, flag not found');
+      flags[flag] = rule.take(it);
+    }
+
+    this._flags = flags;
 
     return this;
   }
@@ -137,15 +145,73 @@ class Args {
    */
   get(flag) {
     if (!_.has(this._schema, flag)) throw new Error('flag not defined in schema');
+    if (!_.has(this._flags, flag)) throw new Error('command parse error');
 
-    let value = null;
-    if (_.has(this._flags, flag)) {
-      value = this._flags[flag];
-    } else {
-      value = this._schema[flag].defaultValue;
+    return this._flags[flag];
+  }
+
+  /**
+   * transform command to slices
+   * 
+   * -l -p 8080 -d /usr/logs/ -t 'hello world -x' -k -80
+   * will transform to:
+   * ['-l', '-p', '8080', '-d', '/usr/logs/', '-t', 'hello world -x', '-k', '-80']
+   * 
+   * logical:
+   * 1. stop when meet [\s] && first char is not ['"]
+   * 2. stop when meet ['"] && first char is ['"]
+   * @api @private
+   */
+  _slices(command) {
+    let result = [];
+
+    let currentSlice = null;
+
+    for (let char of command) {
+      // open?
+      if (!currentSlice && !char.isWhiteSpace()) {
+        currentSlice = {
+          buffer: !char.isQuotationMark() ? [char] : [],
+          tag: char.isQuotationMark() ? char : null,
+          commit: function () {
+            result.push(this.buffer.join(''));
+          }
+        };
+        continue;
+      }
+
+      // close?
+      if (currentSlice) {
+        if (currentSlice.tag) {
+          if (char === currentSlice.tag) {
+            currentSlice.commit();
+            currentSlice = null;
+            continue;
+          }
+        } else {
+          if (char.isWhiteSpace()) {
+            currentSlice.commit();
+            currentSlice = null;
+            continue;
+          }
+        }
+      }
+
+      // follow?
+      if (currentSlice) {
+        currentSlice.buffer.push(char);
+      }
     }
 
-    return value;
+    // close the last slice
+    if (currentSlice) {
+      if (currentSlice.tag) {
+        throw new Error("missing closed tag (')");
+      }
+      currentSlice.commit();
+    }
+
+    return result;
   }
 
   /**
@@ -162,25 +228,25 @@ class Args {
         type: 'integer',
         defaultValue: 0,
         testSchema: element => element.match(/^[a-zA-Z-_]+:integer$/),
-        testCommand: () => { },
-        takeValue: element => Number.parseInt(element.split(/\s/)[1])
+        take: it => Number.parseInt(it.next().value)
       },
       {
         type: 'string',
         defaultValue: '',
         testSchema: element => element.match(/^[a-zA-Z-_]+:string$/),
-        testCommand: () => { },
-        takeValue: element => element.split(/\s/)[1]
+        take: it => it.next().value
       },
       {
         type: 'boolean',
         defaultValue: false,
         testSchema: element => element.match(/^[a-zA-Z-_]+:boolean$/),
-        testCommand: () => { },
-        takeValue: element => true
+        take: it => true
       },
     ];
   }
 }
+
+String.prototype.isQuotationMark = function () { return ['"', "'"].includes(this.toString()); }
+String.prototype.isWhiteSpace = function () { return [' ', '\t'].includes(this.toString()); }
 
 module.exports = Args;
