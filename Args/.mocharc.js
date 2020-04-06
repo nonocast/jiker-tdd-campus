@@ -5,5 +5,5 @@ module.exports = {
 		'./test/ArgsTest.js',
 	],
 	recursive: false,
-	watch: true
+	watch: false
 };
