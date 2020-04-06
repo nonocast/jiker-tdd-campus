@@ -24,7 +24,7 @@ class Args {
    * schema format:
    *   {flag}:{type} {flag}:{type} ... {flag}:{type}
    * 
-   *   - flag: [A-Za-z0-9_-]
+   *   - flag: [A-Za-z0-9_]
    *   - type: [object, integer, string, boolean, array]
    *   - split: [\s,]
    * 
@@ -81,7 +81,7 @@ class Args {
    * command format:
    *   -{flag}[:{value}] -{flag}[:{value}] ... -{flag}[:{value}]
    * 
-   *   - flag: [A-Za-z0-9_-]
+   *   - flag: [A-Za-z0-9_]
    *   - value: depends on it's type rule
    *   - split: [\s]
    * 
@@ -228,20 +228,45 @@ class Args {
         type: 'integer',
         defaultValue: 0,
         testSchema: element => element.match(/^[a-zA-Z-_]+:integer$/),
-        take: it => Number.parseInt(it.next().value)
+        take: it => {
+          let value = Number.parseInt(it.next().value);
+          if (Number.isNaN(value) || typeof value === 'undefined' || value === null) {
+            throw new Error('wrong integer format');
+          }
+          return value;
+        }
       },
       {
         type: 'string',
         defaultValue: '',
-        testSchema: element => element.match(/^[a-zA-Z-_]+:string$/),
-        take: it => it.next().value
+        testSchema: element => element.match(/^[a-zA-Z0-9_]+:string$/),
+        take: it => {
+          let value = it.next().value;
+          if (typeof value === 'undefined' || value === null || value.trim().length === 0) {
+            throw new Error('wrong string format');
+          }
+          return value;
+        }
       },
       {
         type: 'boolean',
         defaultValue: false,
-        testSchema: element => element.match(/^[a-zA-Z-_]+:boolean$/),
+        testSchema: element => element.match(/^[a-zA-Z0-9_]+:boolean$/),
         take: it => true
       },
+      {
+        type: 'array',
+        defaultValue: [],
+        testSchema: element => element.match(/^[a-zA-Z0-9_]+:array$/),
+        take: it => {
+          let value = it.next().value;
+          if (typeof value === 'undefined' || value === null || value.trim().length === 0) {
+            throw new Error('wrong array format');
+          }
+
+          return value.split(',');
+        }
+      }
     ];
   }
 }
