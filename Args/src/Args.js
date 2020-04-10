@@ -79,7 +79,7 @@ class Args {
    * Parse command depends on _schema
    * 
    * command format:
-   *   -{flag}[:{value}] -{flag}[:{value}] ... -{flag}[:{value}]
+   *   -{flag}[ {value}] -{flag}[ {value}] ... -{flag}[ {value}]
    * 
    *   - flag: [A-Za-z0-9_]
    *   - value: depends on it's type rule
