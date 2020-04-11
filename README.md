@@ -124,11 +124,6 @@ rover.state.land.called.should.eq(true);
 rover.state.land.firstCall.args.should.eql([10, 10]);
 ```
 
-- fake
-- spy
-- stub
-- mock
-
 # cloc
 
 意图: 提供代码行数统计
