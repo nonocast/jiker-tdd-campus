@@ -4,6 +4,7 @@ const should = require('chai').should();
 const sinon = require("sinon");
 const MarsRover = require('../src/MarsRover');
 
+
 describe('Mars Rover Test', () => {
   it('usage', () => {
     let rover = new MarsRover();
