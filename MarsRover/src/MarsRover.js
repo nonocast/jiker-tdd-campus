@@ -1,7 +1,6 @@
 const debug = require('debug')('app:Args');
 const _ = require('lodash');
 
-
 /**
  * @class MarsRover
  */
@@ -28,6 +27,9 @@ class MarsRover {
    * @api @public
    */
   execute(command) {
+    if (arguments.length !== 1) throw new TypeError();
+    if (typeof command !== 'string' || command.trim() === '') throw new TypeError();
+
     let commands = this._parse(command);
     _.each(commands, c => c());
     return this.value;
@@ -114,29 +116,37 @@ class MarsRover {
       }),
       landedN: _.create(MarsRoverState.prototype, {
         direction: () => 'N',
-        forward: () => ++this.location.y,
-        back: () => --this.location.y,
+        canForward: () => this.location.y < this._world.h,
+        canBack: () => this.location.y > 0,
+        forward: () => { if (this._state.canForward()) ++this.location.y },
+        back: () => { if (this._state.canBack()) --this.location.y },
         left: () => this._state = this.states.landedW,
         right: () => this._state = this.states.landedE
       }),
       landedE: _.create(MarsRoverState.prototype, {
         direction: () => 'E',
-        forward: () => ++this.location.x,
-        back: () => --this.location.x,
+        canForward: () => this.location.x < this._world.w,
+        canBack: () => this.location.x > 0,
+        forward: () => this._state.canForward() ? ++this.location.x : this.location.x,
+        back: () => this._state.canBack() ? --this.location.x : this.location.x,
         left: () => this._state = this.states.landedN,
         right: () => this._state = this.states.landedS
       }),
       landedS: _.create(MarsRoverState.prototype, {
         direction: () => 'S',
-        forward: () => --this.location.y,
-        back: () => ++this.location.y,
+        canForward: () => this.location.y > 0,
+        canBack: () => this.location.y < this._world.h,
+        forward: () => { if (this._state.canForward()) --this.location.y },
+        back: () => { if (this._state.canBack()) ++this.location.y },
         left: () => this._state = this.states.landedE,
         right: () => this._state = this.states.landedW
       }),
       landedW: _.create(MarsRoverState.prototype, {
         direction: () => 'W',
-        forward: () => --this.location.x,
-        back: () => ++this.location.x,
+        canForward: () => this.location.x > 0,
+        canBack: () => this.location.x < this._world.w,
+        forward: () => this._state.canForward() ? --this.location.x : this.location.x,
+        back: () => this._state.canBack() ? ++this.location.x : this.location.x,
         left: () => this._state = this.states.landedS,
         right: () => this._state = this.states.landedN
       }),
@@ -172,10 +182,4 @@ class MarsRoverState {
   right() { throw new Error('invalid operation'); }
 };
 
-// MarsRover.DIRECTION = {
-//   E: Symbol.for('E'),
-//   S: Symbol.for('S'),
-//   W: Symbol.for('W'),
-//   N: Symbol.for('N')
-// };
 module.exports = MarsRover;
