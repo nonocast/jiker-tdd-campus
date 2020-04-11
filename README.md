@@ -122,6 +122,7 @@ rover.action(...);
 // 检查是否正确调用state的land方法
 rover.state.land.called.should.eq(true);
 rover.state.land.firstCall.args.should.eql([10, 10]);
+rover.state.land.callCount.should.eq(3);
 ```
 
 # cloc
