@@ -4,6 +4,7 @@
 - [chai](https://www.chaijs.com)
 - [nyc](https://github.com/istanbuljs/nyc)
 - [sinon](http://sinonjs.org)
+- [cloc](https://www.npmjs.com/package/cloc)
 
 ## mocha
 
