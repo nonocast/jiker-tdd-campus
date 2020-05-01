@@ -64,7 +64,7 @@ class Args {
       .map(_.trim)
       .compact()
       .reduce((result, element) => {
-        let rule = _.find(this._rules, rule => rule.testSchema(element));
+        let rule = _.find(this._rules, r => r.testSchema(element));
         if (!rule) throw new Error(`schema format error`);
         let [flag] = element.split(/:/);
         result[flag] = rule;
@@ -230,7 +230,7 @@ class Args {
         testSchema: element => element.match(/^[a-zA-Z-_]+:integer$/),
         take: it => {
           let value = Number.parseInt(it.next().value);
-          if (Number.isNaN(value) || typeof value === 'undefined' || value === null) {
+          if (Number.isNaN(value) || typeof value === 'undefined' || value == null) {
             throw new Error('wrong integer format');
           }
           return value;

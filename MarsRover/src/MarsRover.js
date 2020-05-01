@@ -42,7 +42,7 @@ class MarsRover {
    * - throw 'invalid command format'
    * 
    * @param {String} command
-   * @return {object} commands
+   * @return {Array} commands
    * @api @private
    */
   _parse(command) {
@@ -65,7 +65,7 @@ class MarsRover {
       {
         match: line => line.match(/^\d+\s\d+$/),
         parse: line => {
-          let [x, y] = _.map(line.match(/^(\d+)\s(\d+)$/).slice(1, 3), x => parseInt(x));
+          let [x, y] = _.map(line.match(/^(\d+)\s(\d+)$/).slice(1, 3), each => parseInt(each));
           return () => this._state.world(x, y);
         }
       },
@@ -169,7 +169,7 @@ class MarsRover {
     this._world = { w: 0, h: 0 };
     this._location = { x: 0, y: 0 };
     this._state = this.states.unknown;
-  };
+  }
 }
 
 class MarsRoverState {
@@ -180,6 +180,6 @@ class MarsRoverState {
   back() { throw new Error('invalid operation'); }
   left() { throw new Error('invalid operation'); }
   right() { throw new Error('invalid operation'); }
-};
+}
 
 module.exports = MarsRover;

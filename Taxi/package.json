@@ -1,0 +1,26 @@
+{
+  "name": "taxi",
+  "version": "1.0.0",
+  "private": false,
+  "repository": "https://github.com/nonocast/jiker-tdd-campus.git",
+  "author": "nonocast <nonocast@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha",
+    "coverage": "nyc --reporter=html --reporter=text-summary mocha",
+    "cloc:src": "cloc src/**.js",
+    "cloc:test": "cloc test/**.js"
+  },
+  "dependencies": {
+    "chai": "^4.2.0",
+    "debug": "^4.1.1",
+    "dotenv": "^8.2.0",
+    "lodash": "^4.17.15",
+    "should": "^13.2.3",
+    "sinon": "^9.0.2"
+  },
+  "devDependencies": {
+    "mocha": "^7.1.1",
+    "nyc": "^15.0.1"
+  }
+}
