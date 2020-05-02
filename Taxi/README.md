@@ -1,56 +1,62 @@
-# MarsRover
+# Kata介绍
 
-火星车收到的指令分为四类:
+1. 通过文本文件向应用程序提供输入数据 testData.txt (src/fixtures/testData.txt)。
+2. 在 src/index.js 中集成你自己所写的代码，并将结果赋值给 receipt 变量。
+   - testDataFile 为 /fixtures 文件夹下的测试数据文件名，例如传入的值为 "testData.txt"。
+   - 你写的程序将把 testDataFile 作为参数加载此文件并读取文件内的测试数据，并对每条测试数据计算结果。
+   - 将所有计费结果拼接并使用 \n 分割，然后保存到 receipt 变量中。
+3. 请按照提示把你的的代码逻辑写在 function main() 之外，充分做好单元测试。
+4. 不得修改 package.json 文件和 .eslintrc, .prettierc 等配置文件。
 
-- 探索区域信息：告知火星车，整片区域的长度（X）和宽度（Y）有多大
-- 初始化信息：火星车的降落地点（x, y）和朝向（N, S, E, W）信息
-- 移动指令：火星车可以前进（f）或后退（b）
-- 转向指令：火星车可以左转90度（l）或右转90度（r）
+## 出租车计价：
 
-由于地球和火星之间的距离很远，指令必须批量发送，火星车执行完整批指令之后，再回报自己所在的位置坐标和朝向。
+1. 不大于2公里时只收起步价6元。
+2. 超过2公里的部分每公里收取0.8元。
+3. 超过8公里的部分，每公里加收50%长途费。
+4. 停车等待时加收每分钟0.25元。
+5. 最后计价的时候司机会四舍五入只收到元。
 
-# The Mars Rover Kata
-[DanilSuits/mars-rover-kata: TDD using the Thoughtworks mars-rover problem](https://github.com/DanilSuits/mars-rover-kata)
-
-Research suggests that the original version of this problem was part of the Thoughtworks interview loop as far back as 2007. I haven't been able to find an authoritative source, but the consensus view seems to be that the form was something like what follows below.
-
-# Problem
-
-A squad of robotic rovers are to be landed by NASA on a plateau on Mars. This plateau, which is curiously rectangular, must be navigated by the rovers so that their on-board cameras can get a complete view of the surrounding terrain to send back to Earth.
-
-A rover's position and location is represented by a combination of x and y co-ordinates and a letter representing one of the four cardinal compass points. The plateau is divided up into a grid to simplify navigation. An example position might be 0, 0, N, which means the rover is in the bottom left corner and facing North.
-
-In order to control a rover, NASA sends a simple string of letters. The possible letters are 'L', 'R' and 'M'. 'L' and 'R' makes the rover spin 90 degrees left or right respectively, without moving from its current spot. 'M' means move forward one grid point, and maintain the same heading.
-
-Assume that the square directly North from (x, y) is (x, y+1).
-
-# INPUT:
-
-The first line of input is the upper-right coordinates of the plateau, the lower-left coordinates are assumed to be 0,0.
-
-The rest of the input is information pertaining to the rovers that have been deployed. Each rover has two lines of input. The first line gives the rover's position, and the second line is a series of instructions telling the rover how to explore the plateau. The position is made up of two integers and a letter separated by spaces, corresponding to the x and y co-ordinates and the rover's orientation.
-
-Each rover will be finished sequentially, which means that the second rover won't start to move until the first one has finished moving.
-
-# OUTPUT:
-
-The output for each rover should be its final co-ordinates and heading.
-
-EXAMPLE:
-
-Test Input:
+## 测试数据：
 
 ```
-5 5
-1 2 N
-LMLMLMLMM
-3 3 E
-MMRMMRMRRM
+1公里,等待0分钟\n
+3公里,等待0分钟\n
+10公里,等待0分钟\n
+2公里,等待3分钟
 ```
 
-Expected Output:
+## 期望输出：
 
 ```
-1 3 N
-5 1 E
+收费6元\n
+收费7元\n
+收费13元\n
+收费7元\n
 ```
+
+## 开始考试
+
+1. 点击开始考试。
+2. 下载考题模板并解压，重命名为tdd-taxi-js。
+3. cd tdd-taxi-js。
+4. git init。
+5. git remote add origin <github自有仓库>。
+6. git add .。
+7. git commit -m "Initial commit"。
+8. git push -u origin master。
+9. 接着答题，使用npm run test 和 npm run lint验证本地结果。
+10. 本地验证无误后，push到远程仓库，并将git地址提交到科举。
+11. 提交之后等待科举出考试结果。
+
+## 考试通过的标准
+
+1. 通过 checkstyle 规则(配置文件见 .eslintrc )：
+  - 单个 JavaScript 文件不得超过50行。
+  - 单行代码长度不得超过80个字符。
+  - 单个方法长度不得超过10行。
+  - 单个方法的圈复杂度不得超过4。
+  - 单个方法参数个数不得超过3。
+  - 友好的方法命名。
+2. 在规定考试时间内完成答题，并完成所有需求。
+3. 测试覆盖率100%，没有严重的Sonar问题。
+4. 采用TDD开发模式。
