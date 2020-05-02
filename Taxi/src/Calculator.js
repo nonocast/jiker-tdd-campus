@@ -17,7 +17,7 @@ class Calculator {
   calc({ distance, time }) {
     return _.reduce(this.rules, (sum, each) => sum + each({ distance, time }), 0).round();
   }
-};
+}
 
 Number.prototype.round = function () { return Math.round(this); }
 

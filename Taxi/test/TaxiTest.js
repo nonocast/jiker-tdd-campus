@@ -5,15 +5,13 @@ const sinon = require('sinon');
 const path = require('path');
 const Scanner = require('../src/Scanner');
 const Calculator = require('../src/Calculator');
+const Receipt = require('../src/Receipt');
 
 describe('full test', async () => {
   it('usage', async () => {
-    let calculator = new Calculator();
     let scanner = new Scanner(path.join(__dirname, 'fixtures/testData.txt'));
-    await scanner.load();
-    for await (let each of scanner.entries) {
-      calculator.calc(each);
-    }
+    let receipt = new Receipt(await scanner.parse());
+    receipt.toString().should.eq('收费6元\n收费7元\n收费13元\n收费7元\n');
   });
 
   describe('calc test', () => {
